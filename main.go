@@ -9,21 +9,41 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var (
+	router *mux.Router
+)
+
+func init() {
+	router = mux.NewRouter()
+	router.HandleFunc("/reciepts/process", AddReceiptHandle).Methods(http.MethodPost)
+	router.HandleFunc("/reciepts/{id}/points", GetReceiptPointsHandle).Methods(http.MethodGet)
+}
+
+func init() {
+	dataLog.Disable()
+	databaseLog.Disable()
+	schemaLog.Disable()
+}
+
 func WriteJson(w http.ResponseWriter, body []byte) (int, error) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(200)
 	return w.Write(body)
 }
 
+// AddReceiptHandle handles a POST to add a receipt
+//
+//   - Payload: Receipt encoded JSON
+//   - Result: JSON containing an id for the receipt
+//
+// An example:
+//
+//	```json
+//	{ "id": "7fb1377b-b223-49d9-a31a-5a02701dd310" }
+//	```
 func AddReceiptHandle(w http.ResponseWriter, r *http.Request) {
 	handleErr := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
-		return
-	}
-
-	if r.Method != "POST" {
-		w.Header().Add("Allow", "POST")
-		handleErr(w, r)
 		return
 	}
 
@@ -40,7 +60,7 @@ func AddReceiptHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !receipt.validate() {
+	if !receipt.Validate() {
 		handleErr(w, r)
 		return
 	}
@@ -48,22 +68,34 @@ func AddReceiptHandle(w http.ResponseWriter, r *http.Request) {
 	var resBody struct {
 		Id string `json:"id"`
 	}
-	resBody.Id = database.AddRecipt(receipt)
+	resBody.Id = pseudoUuid()
+	database.AddRecipt(resBody.Id, receipt)
 
 	reqBodyJson, _ = json.Marshal(resBody)
 	WriteJson(w, reqBodyJson)
 	return
 }
 
-func GetReceiptHandle(w http.ResponseWriter, r *http.Request) {
+// GetReceiptPointsHandle handles a GET request for for the points of an receipt
+//
+//   - Path: /receipts/{id}/points
+//   - Result: JSON containing an id for the receipt
+//
+// An example:
+//
+//	 ```sh
+//	 curl -X POST \
+//	     -H "Content-Type: application/json" \
+//	     --data @examples/morning-receipt.json \
+//	     localhost:8080/reciepts/process
+//	 ```
+//
+//	```json
+//	{ "points": "109" }
+//	```
+func GetReceiptPointsHandle(w http.ResponseWriter, r *http.Request) {
 	handleErr := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(400)
-		return
-	}
-
-	if r.Method != "GET" {
-		w.Header().Add("Allow", "GET")
-		handleErr(w, r)
 		return
 	}
 
@@ -83,16 +115,7 @@ func GetReceiptHandle(w http.ResponseWriter, r *http.Request) {
 	WriteJson(w, resBodyJson)
 }
 
-func handleRequests() {
-	router := mux.NewRouter()
-
-	router.HandleFunc("/reciepts/process", AddReceiptHandle)
-	router.HandleFunc("/reciepts/{id}/points", GetReceiptHandle)
-
+func main() {
 	log.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
-}
-
-func main() {
-	handleRequests()
 }

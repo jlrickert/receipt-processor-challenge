@@ -1,49 +1,39 @@
 package main
 
-import (
-	"crypto/rand"
-	"fmt"
-)
-
 type Database struct {
 	receipts map[string]Reciept
 }
 
-var database Database
+const (
+	simpleReceiptKey  = "FC09442B-C532-E7CF-879A-605E837D3709"
+	morningReceiptKey = "493AC2FD-22CE-9280-1853-B5C3480C8E92"
+)
+
+var (
+	database    Database
+	databaseLog = newLogger("database")
+)
 
 func init() {
 	database = Database{
-		receipts: map[string]Reciept{
-			pseudoUuid(): simpleScript,
-			pseudoUuid(): morningReceipt,
-		},
+		receipts: map[string]Reciept{},
 	}
+	database.AddRecipt(morningReceiptKey, morningReceipt)
+	database.AddRecipt(simpleReceiptKey, simpleReceipt)
 }
 
-// Ripped https://stackoverflow.com/questions/15130321/is-there-a-method-to-generate-a-uuid-with-go-language
-// TODO: use a real library
-func pseudoUuid() (uuid string) {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
-
-	uuid = fmt.Sprintf("%X-%X-%X-%X-%X", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
-	return
-}
-
-func (db *Database) AddRecipt(receipt Reciept) string {
-	id := pseudoUuid()
+func (db *Database) AddRecipt(id string, receipt Reciept) {
 	database.receipts[id] = receipt
-	return id
+	databaseLog.Printf("Adding receipt: %v %v", id, receipt)
 }
 
 func (db *Database) GetRecipt(id string) *Reciept {
 	receipt, ok := database.receipts[id]
 	if !ok {
+		databaseLog.Printf("No receipt found for id %v", id)
 		return nil
 	}
+
+	databaseLog.Printf("Receipt found for id %v. Receipt: %v", id, receipt)
 	return &receipt
 }

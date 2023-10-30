@@ -1,18 +1,45 @@
 package main
 
-import "encoding/json"
+import (
+	_ "embed"
+	"encoding/json"
+)
 
-// go:embded examples/morning-receipt.json
-var rawMorningReceipt string
+var (
+	//go:embed examples/morning-receipt.json
+	rawMorningReceipt string
 
-// go:embed examples/simple-receipt.json
-var rawSimpleReceipt string
+	//go:embed examples/simple-receipt.json
+	rawSimpleReceipt string
 
-var simpleScript Reciept
+	//go:embed examples/target.json
+	rawTargetReceipt string
 
-var morningReceipt Reciept
+	//go:embed examples/corner-market.json
+	rawCornerMarket string
+
+	morningReceipt      Reciept
+	simpleReceipt       Reciept
+	targetReceipt       Reciept
+	cornerMarketReceipt Reciept
+
+	dataLog = newLogger("data")
+)
+
+func initReceipt(data string, receipt *Reciept) {
+	err := json.Unmarshal([]byte(data), &receipt)
+	if err != nil {
+		dataLog.Fatalln("Error: ", err, data)
+	}
+	if !receipt.Validate() {
+		dataLog.Fatalln("Invalid receipt: ", receipt)
+	}
+	dataLog.Printf("Receipt read: %v %v", data, receipt)
+}
 
 func init() {
-	json.Unmarshal([]byte(rawSimpleReceipt), &simpleScript)
-	json.Unmarshal([]byte(rawMorningReceipt), &morningReceipt)
+	initReceipt(rawMorningReceipt, &morningReceipt)
+	initReceipt(rawSimpleReceipt, &simpleReceipt)
+	initReceipt(rawCornerMarket, &cornerMarketReceipt)
+	initReceipt(rawTargetReceipt, &targetReceipt)
 }
