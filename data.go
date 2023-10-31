@@ -18,15 +18,15 @@ var (
 	//go:embed examples/corner-market.json
 	rawCornerMarket string
 
-	morningReceipt      Reciept
-	simpleReceipt       Reciept
-	targetReceipt       Reciept
-	cornerMarketReceipt Reciept
+	morningReceipt      Receipt
+	simpleReceipt       Receipt
+	targetReceipt       Receipt
+	cornerMarketReceipt Receipt
 
 	dataLog = newLogger("data")
 )
 
-func initReceipt(data string, receipt *Reciept) {
+func initReceipt(data string, receipt *Receipt) {
 	err := json.Unmarshal([]byte(data), &receipt)
 	if err != nil {
 		dataLog.Fatalln("Error: ", err, data)

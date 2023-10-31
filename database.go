@@ -1,7 +1,7 @@
 package main
 
 type Database struct {
-	receipts map[string]Reciept
+	receipts map[string]Receipt
 }
 
 const (
@@ -16,18 +16,18 @@ var (
 
 func init() {
 	database = Database{
-		receipts: map[string]Reciept{},
+		receipts: map[string]Receipt{},
 	}
-	database.AddRecipt(morningReceiptKey, morningReceipt)
-	database.AddRecipt(simpleReceiptKey, simpleReceipt)
+	database.AddReceipt(morningReceiptKey, morningReceipt)
+	database.AddReceipt(simpleReceiptKey, simpleReceipt)
 }
 
-func (db *Database) AddRecipt(id string, receipt Reciept) {
+func (db *Database) AddReceipt(id string, receipt Receipt) {
 	database.receipts[id] = receipt
 	databaseLog.Printf("Adding receipt: %v %v", id, receipt)
 }
 
-func (db *Database) GetRecipt(id string) *Reciept {
+func (db *Database) GetReceipt(id string) *Receipt {
 	receipt, ok := database.receipts[id]
 	if !ok {
 		databaseLog.Printf("No receipt found for id %v", id)

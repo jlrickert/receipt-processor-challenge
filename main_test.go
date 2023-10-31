@@ -13,7 +13,7 @@ import (
 func TestAddReceiptHandler(t *testing.T) {
 	reqBodyJson, _ := json.Marshal(example1)
 	reqBody := bytes.NewReader(reqBodyJson)
-	r := httptest.NewRequest(http.MethodPost, "/reciepts/process", reqBody)
+	r := httptest.NewRequest(http.MethodPost, "/receipts/process", reqBody)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, r)
 
@@ -34,7 +34,7 @@ func TestAddReceiptHandler(t *testing.T) {
 	}
 
 	if !UUID_RE.MatchString(resData.Id) {
-		t.Errorf("Expected POST \"reciepts/process\" to return a valid uuid id. Got %s", resData.Id)
+		t.Errorf("Expected POST \"receipts/process\" to return a valid uuid id. Got %s", resData.Id)
 	}
 }
 
@@ -54,7 +54,7 @@ func TestGetReceiptPointsHandler(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		url := fmt.Sprintf("/reciepts/%s/points", tc.input)
+		url := fmt.Sprintf("/receipts/%s/points", tc.input)
 		r := httptest.NewRequest(http.MethodGet, url, nil)
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)

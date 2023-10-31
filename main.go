@@ -15,8 +15,8 @@ var (
 
 func init() {
 	router = mux.NewRouter()
-	router.HandleFunc("/reciepts/process", AddReceiptHandle).Methods(http.MethodPost)
-	router.HandleFunc("/reciepts/{id}/points", GetReceiptPointsHandle).Methods(http.MethodGet)
+	router.HandleFunc("/receipts/process", AddReceiptHandle).Methods(http.MethodPost)
+	router.HandleFunc("/receipts/{id}/points", GetReceiptPointsHandle).Methods(http.MethodGet)
 }
 
 func init() {
@@ -53,7 +53,7 @@ func AddReceiptHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var receipt Reciept
+	var receipt Receipt
 	err = json.Unmarshal(reqBodyJson, &receipt)
 	if err != nil {
 		handleErr(w, r)
@@ -69,7 +69,7 @@ func AddReceiptHandle(w http.ResponseWriter, r *http.Request) {
 		Id string `json:"id"`
 	}
 	resBody.Id = pseudoUuid()
-	database.AddRecipt(resBody.Id, receipt)
+	database.AddReceipt(resBody.Id, receipt)
 
 	reqBodyJson, _ = json.Marshal(resBody)
 	WriteJson(w, reqBodyJson)
@@ -87,7 +87,7 @@ func AddReceiptHandle(w http.ResponseWriter, r *http.Request) {
 //	 curl -X POST \
 //	     -H "Content-Type: application/json" \
 //	     --data @examples/morning-receipt.json \
-//	     localhost:8080/reciepts/process
+//	     localhost:8080/receipts/process
 //	 ```
 //
 //	```json
@@ -100,7 +100,7 @@ func GetReceiptPointsHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := mux.Vars(r)["id"]
-	receipt := database.GetRecipt(id)
+	receipt := database.GetReceipt(id)
 
 	if receipt == nil {
 		handleErr(w, r)

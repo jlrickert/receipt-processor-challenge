@@ -3,7 +3,7 @@ package main
 import "testing"
 
 var (
-	example1 = Reciept{
+	example1 = Receipt{
 		Retailer:     "Target",
 		PurchaseDate: "2022-01-01",
 		PurchaseTime: "13:01",
@@ -16,7 +16,7 @@ var (
 		},
 		Total: "35.35",
 	}
-	example2 = Reciept{
+	example2 = Receipt{
 		Retailer:     "M&M Corner Market",
 		PurchaseDate: "2022-03-20",
 		PurchaseTime: "14:33",
@@ -42,7 +42,7 @@ func TestGetTotal(t *testing.T) {
 		{"1.00", 100},
 	}
 	for _, tc := range cases {
-		receipt := Reciept{Total: tc.input}
+		receipt := Receipt{Total: tc.input}
 		actual := receipt.GetTotal()
 		if actual != tc.expected {
 			t.Errorf(
@@ -61,7 +61,7 @@ func TestValidate(t *testing.T) {
 	invalidRetailerExample.Retailer = ""
 
 	cases := []struct {
-		input    Reciept
+		input    Receipt
 		expected bool
 	}{
 		{targetReceipt, true},
@@ -82,7 +82,7 @@ func TestValidate(t *testing.T) {
 
 func TestGetPoints(t *testing.T) {
 	cases := []struct {
-		input    Reciept
+		input    Receipt
 		expected int64
 	}{
 		{example1, 28},

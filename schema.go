@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type Reciept struct {
+type Receipt struct {
 	Retailer     string `json:"retailer"`
 	PurchaseDate string `json:"purchaseDate"`
 	PurchaseTime string `json:"purchaseTime"`
@@ -25,7 +25,7 @@ var (
 
 // Validate the data in the receipt. If Validate returns false then the data
 // from other methods may be undefined.
-func (receipt *Reciept) Validate() bool {
+func (receipt *Receipt) Validate() bool {
 	if len(receipt.Retailer) <= 0 {
 		return false
 	}
@@ -51,13 +51,13 @@ func (receipt *Reciept) Validate() bool {
 	return true
 }
 
-func (receipt *Reciept) GetTotal() int64 {
+func (receipt *Receipt) GetTotal() int64 {
 	val, _ := strconv.ParseFloat(receipt.Total, 64)
 	return int64(val * 100)
 }
 
-func (receipt *Reciept) Copy() *Reciept {
-	r := Reciept{
+func (receipt *Receipt) Copy() *Receipt {
+	r := Receipt{
 		Retailer:     receipt.Retailer,
 		PurchaseDate: receipt.PurchaseDate,
 		PurchaseTime: receipt.PurchaseTime,
@@ -108,7 +108,7 @@ func (item *Item) Copy() *Item {
 //     number of points earned.
 //   - 6 points if the day in the purchase date is odd.
 //   - 10 points if the time of purchase is after 2:00pm and before 4:00pm.
-func (receipt *Reciept) GetPoints() int64 {
+func (receipt *Receipt) GetPoints() int64 {
 	var points int64 = 0
 
 	// One point for every alphanumeric character in the retailer name.
