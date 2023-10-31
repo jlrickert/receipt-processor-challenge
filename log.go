@@ -14,12 +14,12 @@ type LogWriter struct {
 }
 
 func (l *LogWriter) Enable() {
-	l.SetOutput(io.Discard)
+	l.SetOutput(os.Stdout)
 	l.enabled = true
 }
 
 func (l *LogWriter) Disable() {
-	l.SetOutput(os.Stdout)
+	l.SetOutput(io.Discard)
 	l.enabled = false
 }
 
